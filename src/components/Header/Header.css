@@ -1,0 +1,235 @@
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+nav {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.logo {
+    margin-right: 40px;
+    margin-left: 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 0 10px;
+}
+
+.login-icon {
+    margin-right: 20px;
+    margin-left: 40px;
+}
+
+.login-icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.small-menu {
+    display: none;
+}
+  
+.hamburger-icon {
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.large-menu {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.large-menu ul {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.large-menu ul li {
+    margin: 0 65px;
+}
+
+.large-menu ul li:first-child {
+    margin-left: 10px;
+}
+
+.large-menu ul li:last-child {
+    margin-right: 40px;
+}
+
+.login-icon {
+    margin-right: 20px;
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        background-color: var(--primary-color);
+        padding: 10px 0;
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .large-menu {
+        display: none;
+    }
+
+    .small-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        background-color: var(--primary-color);
+        transition: height 0.3s ease;
+        justify-content: flex-end;
+    }
+
+    .toggle-menu {
+        display: flex;
+        align-items: center;
+    }
+
+    .hamburger-icon {
+        font-size: 3em;
+        color: white;
+        cursor: pointer;
+        margin-right: 10px;
+        margin-bottom: 5px;
+    }
+
+    .hamburger-icon:hover {
+        color: var(--secondary-color);
+    }
+
+    .login-icon {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .menu-items {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        left: -200px;
+        width: 200%;
+        background-color: var(--primary-color);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        z-index: 1000;
+    }
+
+    .menu-items li {
+        text-align: center;
+        width: 100%;
+        padding: 7px 0;
+        border-bottom: 1px solid #333;
+    }
+
+    .menu-items li:last-child {
+        border-bottom: none;
+    }
+
+    .menu-items a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        padding: 5px 0;
+        margin-left: 10px;
+    }
+
+    .menu-items a:hover {
+        background-color: #333;
+    }
+
+    .small-menu.expanded .menu-items {
+        display: flex;
+    }
+
+    .logo {
+        margin-left: 20px;
+        width: 100px;
+        height: auto;
+    }
+
+    .login-icon {
+        width: 30px;
+        height: auto;
+    }
+}
+
+@media (min-width: 769px) {
+    .large-menu {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .small-menu {
+        display: none;
+    }
+
+    nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    nav ul li {
+        margin: 0 20px;
+    }
+
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        display: inline-block;
+    }
+}

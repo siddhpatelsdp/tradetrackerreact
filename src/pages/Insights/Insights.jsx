@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './Insights.css';
+import { API_URL } from '../../config';
 
 function Insights() {
   const [trades, setTrades] = useState([]);
@@ -15,16 +17,25 @@ function Insights() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/siddhpatelsdp/siddhpatelsdp.github.io/refs/heads/main/projects/part6/data.json"
-        );
+        const response = await fetch(`${API_URL}/api/trades`, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         setTrades(data);
         calculateMetrics(data);
-        setLoading(false);
       } catch (err) {
+        console.error('Fetch error:', err);
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };

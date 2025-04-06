@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './TradeHistory.css';
+import { API_URL } from '../../config';
 
 function TradeHistory() {
   const [trades, setTrades] = useState([]);
@@ -19,15 +21,27 @@ function TradeHistory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/siddhpatelsdp/siddhpatelsdp.github.io/refs/heads/main/projects/part6/data.json"
-        );
+        const response = await fetch(`${API_URL}/api/trades`, {
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        console.log('Full API URL:', `${API_URL}/api/trades`); // Debugging
+        
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Full error response:', errorData);
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         setTrades(data);
         setFilteredTrades(data);
-        setLoading(false);
       } catch (err) {
+        console.error('Full fetch error:', err);
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };

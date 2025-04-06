@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './About.css';
 
 function About() {
   const [formData, setFormData] = useState({

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './AddTrade.css';
 
 function AddTrade() {
   const [formData, setFormData] = useState({
