@@ -1,10 +1,13 @@
 {
   "files": {
-    "main.js": "/tradetrackerreact/static/js/main.528dab85.js",
+    "main.css": "/tradetrackerreact/static/css/main.39686977.css",
+    "main.js": "/tradetrackerreact/static/js/main.dc4957da.js",
     "index.html": "/tradetrackerreact/index.html",
-    "main.528dab85.js.map": "/tradetrackerreact/static/js/main.528dab85.js.map"
+    "main.39686977.css.map": "/tradetrackerreact/static/css/main.39686977.css.map",
+    "main.dc4957da.js.map": "/tradetrackerreact/static/js/main.dc4957da.js.map"
   },
   "entrypoints": [
-    "static/js/main.528dab85.js"
+    "static/css/main.39686977.css",
+    "static/js/main.dc4957da.js"
   ]
 }
