@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import './Insights.css';
 import { API_URL } from '../../config';
 
-function Insights() {
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(true);
+function Insights({ trades: initialTrades }) {
+  const [trades, setTrades] = useState(initialTrades || []);
+  const [loading, setLoading] = useState(!initialTrades || initialTrades.length === 0);
   const [error, setError] = useState(null);
   const [metrics, setMetrics] = useState({
     totalTrades: 0,
@@ -16,32 +16,36 @@ function Insights() {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${API_URL}/api/trades`, {
-          headers: {
-            'Accept': 'application/json'
+    if (!initialTrades || initialTrades.length === 0) {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`${API_URL}/trades`, {
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          
+          const data = await response.json();
+          setTrades(data);
+          calculateMetrics(data);
+        } catch (err) {
+          console.error('Fetch error:', err);
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-        
-        const data = await response.json();
-        setTrades(data);
-        calculateMetrics(data);
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    } else {
+      calculateMetrics(initialTrades);
+    }
+  }, [initialTrades]);
 
   const calculateMetrics = (data) => {
     const totalTrades = data.length;
@@ -80,12 +84,11 @@ function Insights() {
     });
   };
 
-  if (loading) return <div>Loading insights...</div>;
-  if (error) return <div>Error loading insights: {error}</div>;
+  if (loading) return <div className="loading-message">Loading insights...</div>;
+  if (error) return <div className="error-message">Error loading insights: {error}</div>;
 
   return (
     <div className="insights-page">
-      
       <main>
         <h1>Your Trading Insights.</h1>
         <p>Analyze your trading performance with key metrics and charts.</p>
@@ -104,15 +107,17 @@ function Insights() {
               </tr>
               <tr>
                 <td>Avg. P/L Per Trade</td>
-                <td>{metrics.avgProfitLoss}</td>
+                <td className={metrics.avgProfitLoss >= 0 ? 'profit' : 'loss'}>
+                  {metrics.avgProfitLoss}
+                </td>
               </tr>
               <tr>
                 <td>Best Trade</td>
-                <td>+{parseFloat(metrics.bestTrade.profit_loss || 0).toFixed(2)}</td>
+                <td className="profit">+{parseFloat(metrics.bestTrade.profit_loss || 0).toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Worst Trade</td>
-                <td>{parseFloat(metrics.worstTrade.profit_loss || 0).toFixed(2)}</td>
+                <td className="loss">{parseFloat(metrics.worstTrade.profit_loss || 0).toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -134,7 +139,6 @@ function Insights() {
           </div>
         </section>
       </main>
-      
     </div>
   );
 }

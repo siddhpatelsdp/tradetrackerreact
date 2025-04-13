@@ -41,6 +41,33 @@
     margin: 0 -30px;
 }
 
+.loading-message, .error-message {
+    padding: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+  
+  .error-message {
+    color: #dc3545;
+  }
+  
+  .profit {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .loss {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .chart-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
 @media (max-width: 768px) {
     .key-stats-table {
         width: 80%;

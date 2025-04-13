@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import './TradeHistory.css';
 import { API_URL } from '../../config';
 
-function TradeHistory() {
-  const [trades, setTrades] = useState([]);
-  const [filteredTrades, setFilteredTrades] = useState([]);
-  const [loading, setLoading] = useState(true);
+function TradeHistory({ trades: initialTrades }) {
+  const [trades, setTrades] = useState(initialTrades || []);
+  const [filteredTrades, setFilteredTrades] = useState(initialTrades || []);
+  const [loading, setLoading] = useState(!initialTrades || initialTrades.length === 0);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     instrument: '',
@@ -16,22 +16,19 @@ function TradeHistory() {
     sortBy: 'most-recent'
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const tradesPerPage = 10;
+  const tradesPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/trades`, {
+        const response = await fetch(`${API_URL}/trades`, {
           headers: {
             'Accept': 'application/json'
           }
         });
         
-        console.log('Full API URL:', `${API_URL}/api/trades`); // Debugging
-        
         if (!response.ok) {
           const errorData = await response.text();
-          console.error('Full error response:', errorData);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
@@ -39,7 +36,7 @@ function TradeHistory() {
         setTrades(data);
         setFilteredTrades(data);
       } catch (err) {
-        console.error('Full fetch error:', err);
+        console.error('Error fetching trades:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -54,47 +51,68 @@ function TradeHistory() {
 
     if (filters.instrument) {
       result = result.filter(trade =>
+        trade.instrument && 
         trade.instrument.toLowerCase().includes(filters.instrument.toLowerCase())
       );
     }
 
     if (filters.startDate) {
-      const startDate = new Date(filters.startDate);
+      const startOfDay = new Date(`${filters.startDate}T00:00:00.000`);
       result = result.filter(trade => {
-        const tradeDate = new Date(trade.trade_date);
-        return tradeDate >= startDate;
+        const tradeDate = trade.trade_date ? new Date(trade.trade_date) : null;
+        return tradeDate && tradeDate >= startOfDay;
       });
     }
 
     if (filters.endDate) {
-      const endDate = new Date(filters.endDate);
+      const endOfDay = new Date(`${filters.endDate}T23:59:59.999`);
       result = result.filter(trade => {
-        const tradeDate = new Date(trade.trade_date);
-        return tradeDate <= endDate;
+        const tradeDate = trade.trade_date ? new Date(trade.trade_date) : null;
+        return tradeDate && tradeDate <= endOfDay;
       });
     }
 
     if (filters.tradeType === 'winning') {
-      result = result.filter(trade => parseFloat(trade.profit_loss) > 0);
+      result = result.filter(trade => trade.profit_loss && parseFloat(trade.profit_loss) > 0);
     } else if (filters.tradeType === 'losing') {
-      result = result.filter(trade => parseFloat(trade.profit_loss) < 0);
+      result = result.filter(trade => trade.profit_loss && parseFloat(trade.profit_loss) < 0);
     }
 
     switch (filters.sortBy) {
       case 'most-recent':
-        result.sort((a, b) => new Date(b.trade_date) - new Date(a.trade_date));
+        result.sort((a, b) => {
+          const dateA = a.trade_date ? new Date(a.trade_date) : 0;
+          const dateB = b.trade_date ? new Date(b.trade_date) : 0;
+          return dateB - dateA;
+        });
         break;
       case 'oldest-first':
-        result.sort((a, b) => new Date(a.trade_date) - new Date(b.trade_date));
+        result.sort((a, b) => {
+          const dateA = a.trade_date ? new Date(a.trade_date) : 0;
+          const dateB = b.trade_date ? new Date(b.trade_date) : 0;
+          return dateA - dateB;
+        });
         break;
       case 'highest-profit':
-        result.sort((a, b) => parseFloat(b.profit_loss) - parseFloat(a.profit_loss));
+        result.sort((a, b) => {
+          const profitA = parseFloat(a.profit_loss ?? -Infinity);
+          const profitB = parseFloat(b.profit_loss ?? -Infinity);
+          return profitB - profitA;
+        });
         break;
       case 'biggest-loss':
-        result.sort((a, b) => parseFloat(a.profit_loss) - parseFloat(b.profit_loss));
+        result.sort((a, b) => {
+          const profitA = parseFloat(a.profit_loss ?? Infinity);
+          const profitB = parseFloat(b.profit_loss ?? Infinity);
+          return profitA - profitB;
+        });
         break;
       case 'alphabetical':
-        result.sort((a, b) => a.instrument.localeCompare(b.instrument));
+        result.sort((a, b) => {
+          const instA = (a.instrument || '').toLowerCase();
+          const instB = (b.instrument || '').toLowerCase();
+          return instA.localeCompare(instB);
+        });
         break;
       default:
         break;
@@ -106,32 +124,43 @@ function TradeHistory() {
 
   const calculateMetrics = () => {
     const totalTrades = filteredTrades.length;
+    if (totalTrades === 0) {
+      return {
+        totalTrades: 0,
+        winRate: "0.00",
+        avgProfitLoss: "0.00",
+        bestTrade: null,
+        worstTrade: null,
+      };
+    }
+  
     let winningTrades = 0;
     let totalProfitLoss = 0;
-    let bestTrade = { profit_loss: -Infinity };
-    let worstTrade = { profit_loss: Infinity };
-
+    let bestTrade = null;
+    let worstTrade = null;
+  
     filteredTrades.forEach((trade) => {
-      const profitLoss = parseFloat(trade.profit_loss);
-
+      const profitLoss = trade.profit_loss ? parseFloat(trade.profit_loss) : 0;
+  
+      totalProfitLoss += profitLoss;
+  
       if (profitLoss > 0) {
         winningTrades++;
+        if (!bestTrade || profitLoss > parseFloat(bestTrade.profit_loss)) {
+          bestTrade = trade;
+        }
       }
-
-      totalProfitLoss += profitLoss;
-
-      if (profitLoss > bestTrade.profit_loss) {
-        bestTrade = trade;
-      }
-
-      if (profitLoss < worstTrade.profit_loss) {
-        worstTrade = trade;
+  
+      if (profitLoss < 0) {
+        if (!worstTrade || profitLoss < parseFloat(worstTrade.profit_loss)) {
+          worstTrade = trade;
+        }
       }
     });
-
-    const winRate = totalTrades > 0 ? ((winningTrades / totalTrades) * 100).toFixed(2) : 0;
-    const avgProfitLoss = totalTrades > 0 ? (totalProfitLoss / totalTrades).toFixed(2) : 0;
-
+  
+    const winRate = ((winningTrades / totalTrades) * 100).toFixed(2);
+    const avgProfitLoss = (totalProfitLoss / totalTrades).toFixed(2);
+  
     return {
       totalTrades,
       winRate,
@@ -144,8 +173,21 @@ function TradeHistory() {
   const metrics = calculateMetrics();
 
   const formatNumber = (value, isForex) => {
+    if (value === undefined || value === null || isNaN(parseFloat(value))) {
+      return "N/A";
+    }
     const number = parseFloat(value);
     return isForex ? number.toFixed(5) : number.toFixed(2);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString();
+    } catch {
+      return "N/A";
+    }
   };
 
   const indexOfLastTrade = currentPage * tradesPerPage;
@@ -163,14 +205,16 @@ function TradeHistory() {
     const csvContent = [
       headers.join(','),
       ...filteredTrades.map(trade => {
-        const isForex = trade.instrument.includes("/") && !["XAU/USD", "BTC/USD"].includes(trade.instrument);
+        const isForex = trade.instrument && typeof trade.instrument === 'string' && 
+                       (trade.instrument.includes("/") || 
+                        ["EURUSD", "USDJPY", "XAUUSD"].includes(trade.instrument.toUpperCase()));
         return [
-          `"${trade.instrument}"`,
+          `"${trade.instrument || ''}"`,
           formatNumber(trade.entry_price, isForex),
           formatNumber(trade.exit_price, isForex),
-          trade.trade_date,
-          trade.profit_loss,
-          `"${trade.notes}"`
+          trade.trade_date ? new Date(trade.trade_date).toISOString().split('T')[0] : '',
+          trade.profit_loss || '',
+          `"${trade.notes || ''}"`
         ].join(',');
       })
     ].join('\n');
@@ -185,18 +229,17 @@ function TradeHistory() {
     document.body.removeChild(link);
   };
 
-  if (loading) return <div>Loading trade history...</div>;
-  if (error) return <div>Error loading trade history: {error}</div>;
+  if (loading) return <div className="loading-message">Loading trade history...</div>;
+  if (error) return <div className="error-message">Error loading trade history: {error}</div>;
 
   return (
     <div className="trade-history-page">
-      
       <main>
         <h1>Your Trade History.</h1>
         <p>View, filter, and analyze your past trades to refine your strategy.</p>
 
         <div className="filters">
-          <label htmlFor="instrument-name">Enter Instrument Name:</label>
+        <label htmlFor="instrument-name">Enter Instrument Name:</label>
           <input
             type="text"
             id="instrument-name"
@@ -206,7 +249,7 @@ function TradeHistory() {
             onChange={handleFilterChange}
           />
 
-          <label htmlFor="date-range">Enter Date Range:</label>
+          <label htmlFor="start-date">Enter Date Range:</label>
           <input
             type="date"
             id="start-date"
@@ -259,75 +302,76 @@ function TradeHistory() {
               <th>Date</th>
               <th>Profit/Loss</th>
               <th>Notes</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
-            {currentTrades.map(trade => {
-              const isForex = trade.instrument.includes("/") && !["XAU/USD", "BTC/USD"].includes(trade.instrument);
-              return (
-                <tr key={trade._id}>
-                  <td>{trade.instrument}</td>
-                  <td>{formatNumber(trade.entry_price, isForex)}</td>
-                  <td>{formatNumber(trade.exit_price, isForex)}</td>
-                  <td>{trade.trade_date}</td>
-                  <td>{parseFloat(trade.profit_loss).toFixed(2)}</td>
-                  <td>{trade.notes}</td>
-                  <td><button className="plus-icon">+</button></td>
-                </tr>
-              );
-            })}
+          {currentTrades.map((trade, index) => {
+    const isForex = trade?.instrument && (
+      trade.instrument.includes("/") || 
+      ["EURUSD", "USDJPY", "XAUUSD"].includes(trade.instrument.toUpperCase())
+    );
+
+    // Create a fallback key if trade._id is missing or not unique
+    const key = trade._id || `${trade.instrument}-${trade.trade_date}-${index}`;
+
+    return (
+      <tr key={key}>
+        <td>{trade.instrument || "N/A"}</td>
+        <td>{formatNumber(trade.entry_price, isForex)}</td>
+        <td>{formatNumber(trade.exit_price, isForex)}</td>
+        <td>{formatDate(trade.trade_date)}</td>
+        <td className={trade.profit_loss >= 0 ? 'profit' : 'loss'}>
+          {formatNumber(trade.profit_loss, false)}
+        </td>
+        <td>{trade.notes || ""}</td>
+      </tr>
+    );
+  })}
           </tbody>
         </table>
 
-        <div className="pagination">
-          <button
-            className="prev-button"
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <span className="page-info">
-            {currentPage}/{totalPages}
-          </span>
-          <button
-            className="next-button"
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+        {filteredTrades.length > 0 && (
+          <div className="pagination">
+            <button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        <div className="trade-metrics">
+          <h2>Performance Metrics</h2>
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <h3>Total Trades</h3>
+              <p>{metrics.totalTrades}</p>
+            </div>
+            <div className="metric-card">
+              <h3>Win Rate</h3>
+              <p>{metrics.winRate}%</p>
+            </div>
+            <div className="metric-card">
+              <h3>Avg. P/L Per Trade</h3>
+              <p className={metrics.avgProfitLoss >= 0 ? 'profit' : 'loss'}>
+                {metrics.avgProfitLoss}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <section className="live-statistics">
-          <h2>Live Statistics</h2>
-          <table className="stats-table">
-            <tbody>
-              <tr>
-                <td>Total Trades</td>
-                <td>{metrics.totalTrades}</td>
-              </tr>
-              <tr>
-                <td>Win Rate</td>
-                <td>{metrics.winRate}%</td>
-              </tr>
-              <tr>
-                <td>Best Trade</td>
-                <td>+{parseFloat(metrics.bestTrade.profit_loss || 0).toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td>Worst Trade</td>
-                <td>{parseFloat(metrics.worstTrade.profit_loss || 0).toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-          <button className="export-button" onClick={handleExport}>
-            Export Trade History (CSV)
-          </button>
-        </section>
+        <button className="export-button" onClick={handleExport}>
+          Export to CSV
+        </button>
       </main>
-      
     </div>
   );
 }

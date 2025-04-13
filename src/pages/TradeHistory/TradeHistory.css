@@ -112,6 +112,16 @@
     margin-top: 20px;
 }
 
+.profit {
+    color: #28a745;
+    font-weight: bold;
+}
+  
+  .loss {
+    color: #dc3545;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .filters {
         flex-direction: column;

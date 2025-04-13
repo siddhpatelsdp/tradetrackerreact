@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components//Header/Header';
+import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import AddTrade from './pages/AddTrade/AddTrade';
@@ -11,6 +11,13 @@ import EditTrade from './pages/EditTrade/EditTrade';
 import './styles/Global.css';
 
 function App() {
+  const [trades, setTrades] = useState([]);
+
+  // Function to add a new trade to the state
+  const addTrade = (newTrade) => {
+    setTrades(prevTrades => [...prevTrades, newTrade]);
+  };
+
   return (
     <Router basename={process.env.PUBLIC_URL}>
       <div className="app">
@@ -18,8 +25,8 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/add-trade" element={<AddTrade />} />
-            <Route path="/trade-history" element={<TradeHistory />} />
+            <Route path="/add-trade" element={<AddTrade addTrade={addTrade} />} />
+            <Route path="/trade-history" element={<TradeHistory trades={trades} />} />
             <Route path="/trade-history/:id" element={<EditTrade />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/about" element={<About />} />

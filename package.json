@@ -2,6 +2,7 @@
   "name": "tradetrackerreact",
   "version": "0.1.0",
   "private": false,
+  "proxy": "http://localhost:3000",
   "homepage": "https://siddhpatelsdp.github.io/tradetrackerreact",
   "dependencies": {
     "react": "^18.2.0",
