@@ -1,4 +1,4 @@
-# Logs
+<file name=0 path=/Users/siddh/Desktop/tradetrackerreact/.gitignore># Logs
 logs
 *.log
 npm-debug.log*
@@ -134,3 +134,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+</file>

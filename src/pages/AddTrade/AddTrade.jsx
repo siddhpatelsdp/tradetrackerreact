@@ -8,7 +8,11 @@ function AddTrade({ addTrade }) {
     instrument: '',
     entryPrice: '',
     exitPrice: '',
-    tradeDate: new Date().toISOString().split('T')[0],
+    tradeDate: (() => {
+      const today = new Date();
+      today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+      return today.toISOString().split('T')[0];
+    })(),
     profitLoss: '',
     notes: ''
   });
@@ -104,7 +108,11 @@ function AddTrade({ addTrade }) {
         instrument: '',
         entryPrice: '',
         exitPrice: '',
-        tradeDate: new Date().toISOString().split('T')[0],
+        tradeDate: (() => {
+          const today = new Date();
+          today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+          return today.toISOString().split('T')[0];
+        })(),
         profitLoss: '',
         notes: ''
       });
@@ -120,7 +128,11 @@ function AddTrade({ addTrade }) {
       instrument: '',
       entryPrice: '',
       exitPrice: '',
-      tradeDate: new Date().toISOString().split('T')[0],
+      tradeDate: (() => {
+        const today = new Date();
+        today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+        return today.toISOString().split('T')[0];
+      })(),
       profitLoss: '',
       notes: ''
     });
