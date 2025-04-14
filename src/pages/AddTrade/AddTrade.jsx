@@ -68,8 +68,15 @@ function AddTrade({ addTrade }) {
       const profitLossValue = formData.profitLoss || 
         (parseFloat(formData.exitPrice) - parseFloat(formData.entryPrice)).toFixed(2);
 
+      // Convert tradeDate to local-safe YYYY-MM-DD string
+      const rawDate = new Date(formData.tradeDate);
+      const localDate = new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+
       const finalFormData = {
         ...formData,
+        tradeDate: localDate,
         profitLoss: profitLossValue
       };
 
