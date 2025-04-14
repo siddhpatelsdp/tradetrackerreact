@@ -182,12 +182,8 @@ function TradeHistory({ trades: initialTrades }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    try {
-      const date = new Date(dateString);
-      return isNaN(date.getTime()) ? "N/A" : date.toLocaleDateString();
-    } catch {
-      return "N/A";
-    }
+    const [year, month, day] = dateString.split("-");
+    return `${parseInt(month)}/${parseInt(day)}/${year}`;
   };
 
   const indexOfLastTrade = currentPage * tradesPerPage;
