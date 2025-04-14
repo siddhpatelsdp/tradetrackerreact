@@ -9,7 +9,7 @@ function AddTrade({ addTrade }) {
     entryPrice: '',
     exitPrice: '',
     tradeDate: (() => {
-      return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
+      return new Date().toLocaleDateString('en-CA');
     })(),
     profitLoss: '',
     notes: ''
@@ -29,7 +29,6 @@ function AddTrade({ addTrade }) {
       return 'Instrument must be at least 2 characters';
     }
     
-    // More flexible number validation
     if (!formData.entryPrice || !/^[+-]?\d*\.?\d+$/.test(formData.entryPrice)) {
       return 'Entry price must be a valid number';
     }
@@ -42,7 +41,6 @@ function AddTrade({ addTrade }) {
       return 'Trade date is required';
     }
     
-    // Profit/loss is optional but if provided must be valid
     if (formData.profitLoss && !/^[+-]?\d*\.?\d+$/.test(formData.profitLoss)) {
       return 'Profit/Loss must be a valid number';
     }
@@ -62,11 +60,9 @@ function AddTrade({ addTrade }) {
     setSubmissionStatus('Submitting trade...');
     
     try {
-      // Calculate profit/loss if not provided
       const profitLossValue = formData.profitLoss || 
         (parseFloat(formData.exitPrice) - parseFloat(formData.entryPrice)).toFixed(2);
 
-      // Use tradeDate directly
       const localDate = formData.tradeDate;
 
       const finalFormData = {
@@ -85,12 +81,12 @@ function AddTrade({ addTrade }) {
       
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Error adding trade:', errorData); // <-- added for debug
+        console.error('Error adding trade:', errorData);
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
       
       const newTrade = await response.json();
-      console.log('New trade added:', newTrade); // <-- optional debug log
+      console.log('New trade added:', newTrade);
       const transformedTrade = {
         _id: newTrade.data._id,
         instrument: newTrade.data.instrument,
@@ -102,16 +98,15 @@ function AddTrade({ addTrade }) {
       };
       const updatedResponse = await fetch(`${API_URL}/trades`);
       const updatedTrades = await updatedResponse.json();
-      addTrade(updatedTrades); // Pass the full updated list
+      addTrade(updatedTrades);
       setSubmissionStatus('Trade successfully added!');
       
-      // Reset form after successful submission
       setFormData({
         instrument: '',
         entryPrice: '',
         exitPrice: '',
         tradeDate: (() => {
-          return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
+          return new Date().toLocaleDateString('en-CA');
         })(),
         profitLoss: '',
         notes: ''
@@ -129,7 +124,7 @@ function AddTrade({ addTrade }) {
       entryPrice: '',
       exitPrice: '',
       tradeDate: (() => {
-        return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
+        return new Date().toLocaleDateString('en-CA');
       })(),
       profitLoss: '',
       notes: ''
@@ -158,7 +153,7 @@ function AddTrade({ addTrade }) {
           
           <label htmlFor="entry-price">Entry Price:</label>
           <input
-            type="text" // Changed to text to allow flexible input
+            type="text"
             id="entry-price"
             name="entryPrice"
             value={formData.entryPrice}
@@ -169,7 +164,7 @@ function AddTrade({ addTrade }) {
           
           <label htmlFor="exit-price">Exit Price:</label>
           <input
-            type="text" // Changed to text to allow flexible input
+            type="text"
             id="exit-price"
             name="exitPrice"
             value={formData.exitPrice}
@@ -190,7 +185,7 @@ function AddTrade({ addTrade }) {
           
           <label htmlFor="profit-loss">Profit/Loss (optional):</label>
           <input
-            type="text" // Changed to text to allow +/-
+            type="text"
             id="profit-loss"
             name="profitLoss"
             value={formData.profitLoss}

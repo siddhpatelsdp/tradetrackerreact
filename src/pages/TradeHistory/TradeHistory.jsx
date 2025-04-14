@@ -307,7 +307,6 @@ function TradeHistory({ trades: initialTrades }) {
       ["EURUSD", "USDJPY", "XAUUSD"].includes(trade.instrument.toUpperCase())
     );
 
-    // Create a fallback key if trade._id is missing or not unique
     const key = trade._id || `${trade.instrument}-${trade.trade_date}-${index}`;
 
     return (

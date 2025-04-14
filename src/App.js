@@ -13,7 +13,6 @@ import './styles/Global.css';
 function App() {
   const [trades, setTrades] = useState([]);
 
-  // Function to add a new trade to the state
   const addTrade = (newTrade) => {
     setTrades(prevTrades => [...prevTrades, newTrade]);
   };
