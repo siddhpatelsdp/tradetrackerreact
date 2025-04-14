@@ -9,9 +9,7 @@ function AddTrade({ addTrade }) {
     entryPrice: '',
     exitPrice: '',
     tradeDate: (() => {
-      const today = new Date();
-      today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-      return today.toISOString().split('T')[0];
+      return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
     })(),
     profitLoss: '',
     notes: ''
@@ -68,11 +66,8 @@ function AddTrade({ addTrade }) {
       const profitLossValue = formData.profitLoss || 
         (parseFloat(formData.exitPrice) - parseFloat(formData.entryPrice)).toFixed(2);
 
-      // Convert tradeDate to local-safe YYYY-MM-DD string
-      const rawDate = new Date(formData.tradeDate);
-      const localDate = new Date(rawDate.getTime() - rawDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
+      // Use tradeDate directly
+      const localDate = formData.tradeDate;
 
       const finalFormData = {
         ...formData,
@@ -116,9 +111,7 @@ function AddTrade({ addTrade }) {
         entryPrice: '',
         exitPrice: '',
         tradeDate: (() => {
-          const today = new Date();
-          today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-          return today.toISOString().split('T')[0];
+          return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
         })(),
         profitLoss: '',
         notes: ''
@@ -136,9 +129,7 @@ function AddTrade({ addTrade }) {
       entryPrice: '',
       exitPrice: '',
       tradeDate: (() => {
-        const today = new Date();
-        today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-        return today.toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA'); // Always returns YYYY-MM-DD in local time
       })(),
       profitLoss: '',
       notes: ''
