@@ -18,7 +18,6 @@ function EditTrade() {
   
   useEffect(() => {
     setLoading(true);
-    /*
     fetch(`/api/trades/${id}`)
       .then(response => response.json())
       .then(data => {
@@ -36,8 +35,6 @@ function EditTrade() {
         console.error('Error fetching trade:', error);
         setLoading(false);
       });
-    */
-    setTimeout(() => setLoading(false), 500);
   }, [id]);
 
   const handleInputChange = (e) => {
@@ -50,8 +47,21 @@ function EditTrade() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Updated trade:', trade);
-    alert('Trade updated successfully! (This would save in a real app)');
+    fetch(`/api/trades/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(trade),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Updated trade:', data);
+      alert('Trade updated successfully!');
+    })
+    .catch(error => {
+      console.error('Error updating trade:', error);
+    });
   };
 
   const handleReset = () => {

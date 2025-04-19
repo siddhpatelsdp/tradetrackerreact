@@ -122,6 +122,38 @@
     font-weight: bold;
 }
 
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  .action-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .edit-button {
+    background-color: #1a1a1a;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .action-button:hover {
+    opacity: 0.9;
+  }
+
 @media (max-width: 768px) {
     .filters {
         flex-direction: column;

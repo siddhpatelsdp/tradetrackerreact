@@ -26,6 +26,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/add-trade" element={<AddTrade addTrade={addTrade} />} />
             <Route path="/trade-history" element={<TradeHistory trades={trades} />} />
+            <Route path="/edit-trade/:id" element={<EditTrade />} />
             <Route path="/trade-history/:id" element={<EditTrade />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/about" element={<About />} />

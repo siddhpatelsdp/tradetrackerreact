@@ -16,6 +16,20 @@ function TradeHistory({ trades: initialTrades }) {
     sortBy: 'most-recent'
   });
   const [currentPage, setCurrentPage] = useState(1);
+  // Add delete handler
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this trade?')) return;
+    try {
+      const response = await fetch(`${API_URL}/trades/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Delete failed');
+      // Remove from both trades and filteredTrades
+      setTrades(prev => prev.filter(t => t._id !== id));
+      setFilteredTrades(prev => prev.filter(t => t._id !== id));
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete trade');
+    }
+  };
   const tradesPerPage = 5;
 
   useEffect(() => {
@@ -298,6 +312,7 @@ function TradeHistory({ trades: initialTrades }) {
               <th>Date</th>
               <th>Profit/Loss</th>
               <th>Notes</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -319,6 +334,20 @@ function TradeHistory({ trades: initialTrades }) {
           {formatNumber(trade.profit_loss, false)}
         </td>
         <td>{trade.notes || ""}</td>
+        <td className="actions-cell">
+          <Link
+            to={`/edit-trade/${trade._id}`}
+            className="action-button edit-button"
+          >
+            Edit
+          </Link>
+          <button
+            className="action-button delete-button"
+            onClick={() => handleDelete(trade._id)}
+          >
+            Delete
+          </button>
+        </td>
       </tr>
     );
   })}
