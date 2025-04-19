@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { API_URL } from '../../config';
 import './EditTrade.css';
 
 function EditTrade() {
@@ -18,7 +19,7 @@ function EditTrade() {
   
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/trades/${id}`)
+    fetch(`${API_URL}/trades/${id}`)
       .then(response => response.json())
       .then(data => {
         setTrade({
@@ -47,7 +48,7 @@ function EditTrade() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch(`/api/trades/${id}`, {
+    fetch(`${API_URL}/trades/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -66,12 +67,12 @@ function EditTrade() {
 
   const handleReset = () => {
     setTrade({
-      instrument: 'NAS100',
-      entryPrice: '15320.50',
-      exitPrice: '15400.75',
-      tradeDate: '2025-02-02',
-      profitLoss: '805.00',
-      notes: 'NY session breakout'
+      instrument: trade.instrument,
+      entryPrice: trade.entryPrice,
+      exitPrice: trade.exitPrice,
+      tradeDate: trade.tradeDate,
+      profitLoss: trade.profitLoss,
+      notes: trade.notes
     });
   };
 
