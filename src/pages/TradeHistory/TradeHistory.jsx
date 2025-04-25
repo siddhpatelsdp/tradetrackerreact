@@ -194,14 +194,14 @@ function TradeHistory({ trades: initialTrades }) {
     return isForex ? number.toFixed(5) : number.toFixed(2);
   };
 
-  // Strict MM/DD/YYYY formatter
+  // Strict MM/DD/YYYY formatter using UTC to prevent timezone shifts
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "N/A";
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const yyyy = date.getFullYear();
+    const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(date.getUTCDate()).padStart(2, '0');
+    const yyyy = date.getUTCFullYear();
     return `${mm}/${dd}/${yyyy}`;
   };
 
