@@ -194,10 +194,15 @@ function TradeHistory({ trades: initialTrades }) {
     return isForex ? number.toFixed(5) : number.toFixed(2);
   };
 
+  // Strict MM/DD/YYYY formatter
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    const [year, month, day] = dateString.split("-");
-    return `${parseInt(month)}/${parseInt(day)}/${year}`;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "N/A";
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
   };
 
   const indexOfLastTrade = currentPage * tradesPerPage;
