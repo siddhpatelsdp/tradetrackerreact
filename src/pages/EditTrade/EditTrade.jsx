@@ -26,7 +26,7 @@ function EditTrade() {
           instrument: data.instrument,
           entryPrice: data.entry_price,
           exitPrice: data.exit_price,
-          tradeDate: data.trade_date,
+          tradeDate: new Date(data.trade_date).toISOString().split('T')[0],
           profitLoss: data.profit_loss,
           notes: data.notes
         });
