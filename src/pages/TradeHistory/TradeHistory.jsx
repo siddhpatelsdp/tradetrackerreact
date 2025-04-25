@@ -71,18 +71,22 @@ function TradeHistory({ trades: initialTrades }) {
     }
 
     if (filters.startDate) {
-      const startOfDay = new Date(`${filters.startDate}T00:00:00.000`);
       result = result.filter(trade => {
-        const tradeDate = trade.trade_date ? new Date(trade.trade_date) : null;
-        return tradeDate && tradeDate >= startOfDay;
+        if (!trade.trade_date) return false;
+        const tradeDateStr = new Date(trade.trade_date)
+          .toISOString()
+          .split('T')[0];
+        return tradeDateStr >= filters.startDate;
       });
     }
 
     if (filters.endDate) {
-      const endOfDay = new Date(`${filters.endDate}T23:59:59.999`);
       result = result.filter(trade => {
-        const tradeDate = trade.trade_date ? new Date(trade.trade_date) : null;
-        return tradeDate && tradeDate <= endOfDay;
+        if (!trade.trade_date) return false;
+        const tradeDateStr = new Date(trade.trade_date)
+          .toISOString()
+          .split('T')[0];
+        return tradeDateStr <= filters.endDate;
       });
     }
 
