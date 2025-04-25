@@ -88,13 +88,13 @@ function AddTrade({ addTrade }) {
       const newTrade = await response.json();
       console.log('New trade added:', newTrade);
       const transformedTrade = {
-        _id: newTrade.data._id,
-        instrument: newTrade.data.instrument,
-        entry_price: newTrade.data.entry_price,
-        exit_price: newTrade.data.exit_price,
-        trade_date: newTrade.data.trade_date,
-        profit_loss: newTrade.data.profit_loss,
-        notes: newTrade.data.notes || '',
+        _id:         newTrade._id,
+        instrument:  newTrade.instrument,
+        entry_price: newTrade.entry_price,
+        exit_price:  newTrade.exit_price,
+        trade_date:  newTrade.trade_date,
+        profit_loss: newTrade.profit_loss,
+        notes:       newTrade.notes || '',
       };
       const updatedResponse = await fetch(`${API_URL}/trades`);
       const updatedTrades = await updatedResponse.json();
